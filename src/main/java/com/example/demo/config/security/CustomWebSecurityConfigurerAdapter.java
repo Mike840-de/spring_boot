@@ -1,6 +1,7 @@
 package com.example.demo.config.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -15,9 +16,11 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 @Configuration
 @EnableWebSecurity
+@ConditionalOnProperty(name = "application.authentication.provider", havingValue = "custom", matchIfMissing = true)
 public class CustomWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
-  @Autowired private MyBasicAuthenticationEntryPoint authenticationEntryPoint;
+  @Autowired
+  private MyBasicAuthenticationEntryPoint authenticationEntryPoint;
 
   @Autowired
   protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -42,8 +45,8 @@ public class CustomWebSecurityConfigurerAdapter extends WebSecurityConfigurerAda
   }
 
   @Bean
-  public AuthenticationEntryPoint authenticationEntryPoint(){
-      return new BasicAuthenticationEntryPoint();
+  public AuthenticationEntryPoint authenticationEntryPoint() {
+    return new BasicAuthenticationEntryPoint();
   }
 
   @Bean

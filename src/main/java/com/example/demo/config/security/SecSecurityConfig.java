@@ -1,5 +1,6 @@
 package com.example.demo.config.security;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -15,6 +16,7 @@ import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuc
 
 @Configuration
 @EnableWebSecurity
+@ConditionalOnProperty(name = "application.authentication.provider", havingValue = "sec", matchIfMissing = true)
 public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(AuthenticationManagerBuilder auth) throws Exception {
