@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -32,22 +33,22 @@ public class CustomWebSecurityConfigurerAdapter extends WebSecurityConfigurerAda
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http.authorizeRequests()
+    http.csrf().disable().authorizeRequests()
         .antMatchers("/securityNone")
         .permitAll()
         .anyRequest()
         .authenticated()
         .and()
         .httpBasic()
-        .authenticationEntryPoint(authenticationEntryPoint());
+        .authenticationEntryPoint(authenticationEntryPoint);
 
     http.addFilterAfter(new CustomFilter(), BasicAuthenticationFilter.class);
   }
 
-  @Bean
+  /*@Bean
   public AuthenticationEntryPoint authenticationEntryPoint() {
     return new BasicAuthenticationEntryPoint();
-  }
+  }*/
 
   @Bean
   public PasswordEncoder passwordEncoder() {

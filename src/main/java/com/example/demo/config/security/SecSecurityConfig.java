@@ -10,13 +10,17 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
-@ConditionalOnProperty(name = "application.authentication.provider", havingValue = "sec", matchIfMissing = true)
+@ConditionalOnProperty(
+    name = "application.authentication.provider",
+    havingValue = "sec",
+    matchIfMissing = true)
 public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -49,15 +53,18 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
         .authenticated()
         .and()
         .formLogin()
-        .loginPage("/login.html")
-        .loginProcessingUrl("/perform_login")
-        .defaultSuccessUrl("/homepage.html", true)
-        .failureUrl("/login.html?error=true")
+        // .loginPage("/login.html")
+        // .loginProcessingUrl("/perform_login")
+        // .defaultSuccessUrl("/logout", true)
+        .successHandler(authenticationSuccessHandler())
+        .failureUrl("/login")
         .failureHandler(authenticationFailureHandler())
         .and()
         .logout()
-        .logoutUrl("/perform_logout")
-        .deleteCookies("JSESSIONID")
+        // .logoutUrl("/perform_logout")
+        // .logoutSuccessUrl("/login")//.invalidateHttpSession(true)
+        .logoutSuccessHandler(logoutSuccessHandler())
+        // .deleteCookies("JSESSIONID")
         .logoutSuccessHandler(logoutSuccessHandler());
   }
 
@@ -67,12 +74,22 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
   }
 
   @Bean
-  public AuthenticationFailureHandler authenticationFailureHandler() {
-    return new ExceptionMappingAuthenticationFailureHandler();
+  public AuthenticationSuccessHandler authenticationSuccessHandler() {
+    return new MySimpleUrlAuthenticationSucessHandler();
   }
 
   @Bean
   public LogoutSuccessHandler logoutSuccessHandler() {
-    return new SimpleUrlLogoutSuccessHandler();
+    return new CustomLogoutSuccessHandler();
   }
+
+  @Bean
+  public AuthenticationFailureHandler authenticationFailureHandler() {
+    return new ExceptionMappingAuthenticationFailureHandler();
+  }
+
+  /*@Bean
+  public LogoutSuccessHandler logoutSuccessHandler() {
+    return new SimpleUrlLogoutSuccessHandler();
+  }*/
 }
